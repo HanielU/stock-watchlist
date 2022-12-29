@@ -67,15 +67,17 @@ function useStockStore() {
     const watchlists = await trpc().user.getWatchLists.query();
 
     // dedupe symbols
-    const symbols = [...new Set(watchlists.map(wl => wl.symbols.split(",")).flat())];
+    const allSymbolsAcrossWatchLists = [
+      ...new Set(watchlists.map(wl => wl.symbols.split(",")).flat()),
+    ];
     const symbolsMap = new Map<string, any>();
 
-    if (symbols.length === 0) return;
+    if (allSymbolsAcrossWatchLists.length === 0) return;
 
-    const valid = symbols.filter(v => v);
+    const validSymbols = allSymbolsAcrossWatchLists.filter(v => v);
 
-    for (let i = 0; i < valid.length; i++) {
-      const symbol = valid[i];
+    for (let i = 0; i < validSymbols.length; i++) {
+      const symbol = validSymbols[i];
       const quote = await iexClient.quote({ symbol });
       symbolsMap.set(symbol, quote);
     }
@@ -98,6 +100,11 @@ function useStockStore() {
     });
 
     set(temp);
+  }
+
+  async function getSymbolChartData(symbol: string) {
+    // range - 1m = 1 month = 30d
+    return await iexClient.batch({ symbols: [symbol], fields: "chart", range: "1m" });
   }
 
   async function removeSymbolFromWatchlist(watchlistId: string, symbol: string) {
@@ -140,6 +147,7 @@ function useStockStore() {
 
   return {
     subscribe,
+    getSymbolChartData,
     removeSymbolFromWatchlist,
     addSymbolToWatchlist,
     createWatchList,

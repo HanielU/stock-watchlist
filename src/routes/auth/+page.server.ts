@@ -11,6 +11,8 @@ const logout: Action = async ({ cookies }) => {
     maxAge: 0,
   });
 
+  console.log("logout", cookies.get("session"));
+
   throw redirect(301, "/auth");
 };
 

@@ -28,7 +28,10 @@
 
     <tbody>
       {#each watchlistData as { symbol, description, bidPrice, askPrice, lastPrice }}
-        <tr class="bg-white border-b">
+        <tr
+          class="bg-white border-b cursor-pointer transition hover:bg-neutral-100"
+          on:click={() => dispatch("show-details", symbol)}
+        >
           <th scope="row" class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap">
             {symbol}
           </th>

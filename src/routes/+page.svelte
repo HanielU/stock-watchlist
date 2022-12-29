@@ -1,18 +1,13 @@
 <script lang="ts">
-  import { iexClient, watchListStore } from "$lib/stores";
+  import { watchListStore } from "$lib/stores";
   import StocksTable from "./components/StocksTable.svelte";
+  import StockDetailsView from "./components/StockDetailsView.svelte";
 
   let newWatchListName = "";
   let creatingWatchlist = false;
   let editWatchListId: string | null = null;
   let editedWatchListName = "";
-
-  async function getStuff() {
-    // range - 1m = 1 month = 30d
-    // const chartData = await iexClient.batch({ symbols: ["AAPL"], fields: "chart", range: "1m" });
-    // const iexSymbols = await iexClient.iexSymbols();
-    // console.log(iexSymbols.find(s => s.symbol === "AAPL"));
-  }
+  let stockDetailsSymbol = "";
 </script>
 
 <div class="max-w-6xl mx-auto px-5">
@@ -96,8 +91,10 @@
               on:click={() => {
                 editedWatchListName = name;
                 editWatchListId = id;
-              }}>Edit</button
+              }}
             >
+              Edit
+            </button>
             <button
               class="bg-orange-500 p-(y1 x2) text-(sm white) rounded-lg"
               on:click={() => watchListStore.deleteWatchList(id)}>Delete</button
@@ -107,6 +104,7 @@
 
         <StocksTable
           watchlistData={stockquotes}
+          on:show-details={e => (stockDetailsSymbol = e.detail)}
           on:delete={e => watchListStore.removeSymbolFromWatchlist(id, e.detail)}
         />
       </div>
@@ -115,3 +113,7 @@
     {/each}
   </div>
 </div>
+
+{#if !!stockDetailsSymbol}
+  <StockDetailsView {stockDetailsSymbol} on:close={() => (stockDetailsSymbol = "")} />
+{/if}
