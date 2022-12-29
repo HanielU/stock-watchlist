@@ -1,0 +1,48 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  // provider = "postgresql"
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// make a user model to store only a user's username with a unique constraint, and a user's watchlist 
+model User {
+  id         String      @id @default(cuid())
+  username   String      @unique
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  watchlists Watchlist[]
+}
+
+model Watchlist {
+  id      String  @id @default(cuid())
+  name    String
+  symbols String?
+  User    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId  String
+}
+
+// make a stock model to store a 
+// 	- Stock Symbol
+// 	- Description
+// 	- Bid Price
+// 	- Ask Price
+// 	- Last Price
+
+// model Stock {
+//   id          Int      @id @default(autoincrement())
+//   symbol      String   @unique
+//   description String
+//   bidPrice    Float
+//   askPrice    Float
+//   lastPrice   Float
+//   createdAt   DateTime @default(now())
+//   updatedAt   DateTime @updatedAt
+//   User        User[]
+// }
