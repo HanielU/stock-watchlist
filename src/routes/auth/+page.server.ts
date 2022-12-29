@@ -2,18 +2,17 @@ import type { Action, Actions } from "./$types";
 import { db } from "$lib/server/prisma";
 import { redirect } from "@sveltejs/kit";
 
-const logout: Action = async ({ cookies }) => {
-  cookies.set("session", "", {
-    path: "/",
-    httpOnly: true,
-    sameSite: "strict",
-    secure: process.env.NODE_ENV === "production",
-    maxAge: 0,
-  });
+import type { PageServerLoad } from "./$types";
 
-  console.log("logout", cookies.get("session"));
+export const load: PageServerLoad = async ({ locals }) => {
+  if (locals.user) {
+    throw redirect(301, "/");
+  }
+};
 
-  throw redirect(301, "/auth");
+const logout: Action = async event => {
+  event.cookies.delete("session");
+  event.locals.user = null;
 };
 
 const login: Action = async ({ request, cookies }) => {

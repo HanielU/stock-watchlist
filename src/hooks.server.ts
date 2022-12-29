@@ -29,9 +29,6 @@ const trpcHandle: Handle = async ({ event, resolve }) => {
       }
     } else {
       event.locals.user = user;
-      if (event.url.pathname === "/auth") {
-        return Response.redirect(event.url.origin);
-      }
     }
   }
 

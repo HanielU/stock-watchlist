@@ -89,22 +89,32 @@ function useStockStore() {
       temp.set(wl.id, {
         ...wl,
         symbols: wlSymbols,
-        stockquotes: stockQuotes.map(stockQuote => ({
-          symbol: stockQuote.symbol,
-          description: stockQuote.companyName,
-          bidPrice: stockQuote.iexBidPrice,
-          askPrice: stockQuote.iexAskPrice,
-          lastPrice: stockQuote.close,
-        })),
+        stockquotes: stockQuotes.map(parseQuote),
       });
     });
 
     set(temp);
   }
 
+  function parseQuote(quote: any) {
+    return {
+      symbol: quote.symbol,
+      description: quote.companyName,
+      bidPrice: quote.iexBidPrice,
+      askPrice: quote.iexAskPrice,
+      lastPrice: quote.close,
+    };
+  }
+
   async function getSymbolChartData(symbol: string) {
     // range - 1m = 1 month = 30d
-    return await iexClient.batch({ symbols: [symbol], fields: "chart", range: "1m" });
+    const { chart, quote } = await iexClient.batch({
+      symbols: [symbol],
+      fields: "chart,quote",
+      range: "1m",
+    });
+
+    return { chart, quote: parseQuote(quote) };
   }
 
   async function removeSymbolFromWatchlist(watchlistId: string, symbol: string) {

@@ -109,7 +109,7 @@
         />
       </div>
     {:else}
-      <div class="text-center text-neutral-500">No watchlists yet</div>
+      <div class="text-center text-neutral-500">Watchlists Incoming...</div>
     {/each}
   </div>
 </div>
